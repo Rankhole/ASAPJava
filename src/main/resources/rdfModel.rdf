@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:vcard="http://www.w3.org/2001/vcard-rdf/3.0#" > 
+  <rdf:Description rdf:about="sn://Essen">
+    <vcard:Other>Grillen</vcard:Other>
+    <vcard:Other>Eis</vcard:Other>
+    <vcard:Other>Fleisch</vcard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="sn://Sportarten">
+    <vcard:Other>Schwimmen</vcard:Other>
+    <vcard:Other>Baseball</vcard:Other>
+    <vcard:Other>Fußball</vcard:Other>
+    <vcard:Other>Basketball</vcard:Other>
+  </rdf:Description>
+  <rdf:Description rdf:about="sn://Politik">
+    <vcard:Other>SPD</vcard:Other>
+    <vcard:Other>Grüne</vcard:Other>
+  </rdf:Description>
+</rdf:RDF>
