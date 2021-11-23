@@ -3,7 +3,7 @@
 /dist/
 /workingdirectory/
 build.xml
-.idea/*
+.idea
 
 target/
 pom.xml.tag
