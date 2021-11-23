@@ -12,7 +12,7 @@ import java.util.List;
 public interface ASAPChunkReceivedListener {
     /**
      * Announce incoming ASAP messages. Note the important difference of both senders. ASAP is a routing protocol.
-     * An ASAP message has got an original sender (the end-to-end (E2E) sender). Other peers can route this message.
+     * An ASAP message has got an origin   al sender (the end-to-end (E2E) sender). Other peers can route this message.
      * The final (senderPoint2Point) is not necessarily the E2E sender but the peer on the other side of the channel.
      * <br/><br/>
      * E2E sender and direct sender are always the same when disengaging routing.

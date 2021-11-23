@@ -1,11 +1,12 @@
 package net.sharksystem.asap;
 
-import com.sun.istack.internal.NotNull;
+
 import net.sharksystem.asap.protocol.ASAPConnection;
 import net.sharksystem.asap.protocol.ASAPConnectionListener;
 import net.sharksystem.asap.utils.PeerIDHelper;
 import net.sharksystem.streams.StreamPair;
 import net.sharksystem.utils.Log;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.*;

@@ -19,7 +19,7 @@ import static net.sharksystem.asap.engine.ASAPInternalChunkFS.META_DATA_EXTENSIO
  *
  * @author thsc
  */
-class ASAPChunkStorageFS implements ASAPChunkStorage {
+public class ASAPChunkStorageFS implements ASAPChunkStorage {
     private final String rootDirectory;
     private final String format;
     private int era = -1;
