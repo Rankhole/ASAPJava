@@ -14,7 +14,7 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
     RDFComparator rdfComparator;
 
     // true = use whitelist, false = use blacklist
-    private boolean useWhitelist = true;
+    private boolean useWhitelist = false;
     
     private float similarityValue = 0.5f;
 
@@ -68,6 +68,7 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
                 e.printStackTrace();
             }
         }
+        super.chunkReceived(format, senderE2E, uri, era, asapHopList);
     }
 
     public float getSimilarityValue() {

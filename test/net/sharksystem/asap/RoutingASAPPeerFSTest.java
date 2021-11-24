@@ -10,6 +10,7 @@ import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.mockAndTemplates.TestUtils;
 import org.apache.jena.Jena;
 import org.apache.jena.rdf.model.Literal;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -29,8 +30,8 @@ public class RoutingASAPPeerFSTest {
 
     private String TEST_URI = "sn://test";
 
-    @BeforeEach
-    void setup() throws IOException, ASAPException {
+    @Before
+    public void setUp() throws IOException, ASAPException {
         Collection<CharSequence> formats = new ArrayList<>();
         formats.add("ASAPRouter");
 
@@ -38,8 +39,11 @@ public class RoutingASAPPeerFSTest {
 
         this.rdfComparator = new LiteralStringComparator(rdfModel);
 
-        this.aliceRoutingTestPeer = new ASAPRoutingTestPeerFS("ALICE", "/", formats, rdfComparator);
-        this.bobRoutingTestPeer = new ASAPRoutingTestPeerFS("BOB", "/", formats, rdfComparator);
+        this.aliceRoutingTestPeer = new ASAPRoutingTestPeerFS("ALICE", "./testPeerFS/ALICE", formats, rdfComparator);
+        this.bobRoutingTestPeer = new ASAPRoutingTestPeerFS("BOB", "./testPeerFS/BOB", formats, rdfComparator);
+
+        aliceRoutingTestPeer.useBlacklistForRouting();
+        bobRoutingTestPeer.useBlacklistForRouting();
     }
 
     @Test
