@@ -1,13 +1,16 @@
 package net.sharksystem.asap.RDFModel;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.base.Sys;
+import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
+import org.w3c.dom.Node;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class JenaRDFModel implements RDFModel {
 
@@ -26,8 +29,23 @@ public class JenaRDFModel implements RDFModel {
 
     @Override
     public List<String> getModelAttributesAsList() {
-        rdfModel.listStatements();
-        return null;
+        Set<String> attributeList = new HashSet<>();
+
+        NodeIterator nodeIterator = rdfModel.listObjects();
+        while (nodeIterator.hasNext()){
+            RDFNode rdfNode = nodeIterator.next();
+            attributeList.add(rdfNode.toString());
+        }
+
+        if(!onlyChildren){
+            ResIterator resIterator = rdfModel.listSubjects();
+            while (resIterator.hasNext()){
+                RDFNode rdfNode = resIterator.next();
+                attributeList.add(rdfNode.toString());
+            }
+        }
+
+        return new ArrayList<>(attributeList);
     }
 
     @Override
