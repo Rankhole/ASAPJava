@@ -13,12 +13,48 @@
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-core -->
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
             <version>4.2.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text
+        For Levenshtein Distance implementation-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/de.sciss/ws4j -->
+        <dependency>
+            <groupId>de.sciss</groupId>
+            <artifactId>ws4j</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/de.sciss/jawjaw
+        this is for ws4j to work-->
+        <dependency>
+            <groupId>de.sciss</groupId>
+            <artifactId>jawjaw</artifactId>
+            <version>0.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.linguatools</groupId>
+            <artifactId>disco</artifactId>
+            <version>v3.0.0</version>
         </dependency>
     </dependencies>
 </project>
