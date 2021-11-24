@@ -1,15 +1,14 @@
 package net.sharksystem.asap.RDFComparator;
 
-public class LiteralStringComparator implements RDFComparator {
+import net.sharksystem.asap.RDFModel.RDFModel;
 
-    /**
-     * Simply checks if both strings are equal and returns a 1 or 0, representing true or false.
-     * @param uri               uri to compare
-     * @param rdfModelAttribute attribute to compare
-     * @return 1.0 = true, 0.0 = false
-     */
+public class LiteralStringComparator extends RDFComparatorImpl {
+    public LiteralStringComparator(RDFModel rdfModel) {
+        super(rdfModel);
+    }
+
     @Override
-    public float compare(String uri, String rdfModelAttribute) {
+    public float compareAttributes(String uri, String rdfModelAttribute) {
         if(uri.equals(rdfModelAttribute)){
             return 1.0f;
         } else {

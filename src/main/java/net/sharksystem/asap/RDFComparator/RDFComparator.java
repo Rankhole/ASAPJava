@@ -1,15 +1,22 @@
 package net.sharksystem.asap.RDFComparator;
 
-/**
- * This interface can be used to implement comparison algorithms.
- */
+import net.sharksystem.asap.RDFModel.RDFModel;
+
+;
+
 public interface RDFComparator {
+
     /**
-     * Compare uri to the rdf model attribute. Implementation can be any given algorithm.
-     *
-     * @param uri               uri to compare
-     * @param rdfModelAttribute attribute to compare
-     * @return float representing similarity. perfect match = 1.0f, no relation = 0.0f (use instead of returning true/false)
+     * Comparison logic which defines how a word should be compared with your rdf model.
+     * @param uri uri
+     * @param similarityValue value between 0.0 and 1.0 which describes the threshold for matching
+     * @return true, if similarity bigger then threshold, else false
      */
-    float compare(String uri, String rdfModelAttribute);
+    boolean compareWithRDFModel(String uri, float similarityValue);
+
+    /**
+     * Set the rdf model of the comparator.
+     * @param rdfModel rdf model
+     */
+    void setRDFModel(RDFModel rdfModel);
 }
