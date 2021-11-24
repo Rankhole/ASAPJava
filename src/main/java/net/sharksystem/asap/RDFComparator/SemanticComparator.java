@@ -6,7 +6,7 @@ import net.sharksystem.asap.RDFModel.RDFModel;
 
 import java.io.IOException;
 
-public class SemanticComparator extends RDFComparatorImpl {
+public class SemanticComparator extends RDFComparatorTemplateImpl {
 
     private DISCO disco = DISCO.load("src/main/resources/cc.de.300.col.denseMatrix/cc.de.300-COL.denseMatrix");
 

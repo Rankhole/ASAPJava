@@ -4,11 +4,15 @@ import net.sharksystem.asap.RDFModel.RDFModel;
 
 import java.util.List;
 
-public abstract class RDFComparatorImpl implements RDFComparator {
+
+/**
+ * Template method pattern for comparators.
+ */
+public abstract class RDFComparatorTemplateImpl implements RDFComparator {
 
     RDFModel rdfModel;
 
-    public RDFComparatorImpl(RDFModel rdfModel){
+    public RDFComparatorTemplateImpl(RDFModel rdfModel){
         this.rdfModel = rdfModel;
     }
 

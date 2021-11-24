@@ -3,7 +3,7 @@ package net.sharksystem.asap.RDFComparator;
 import net.sharksystem.asap.RDFModel.RDFModel;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
-public class LevenshteinDistanceComparator extends RDFComparatorImpl {
+public class LevenshteinDistanceComparator extends RDFComparatorTemplateImpl {
     public LevenshteinDistanceComparator(RDFModel rdfModel) {
         super(rdfModel);
     }
