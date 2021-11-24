@@ -90,6 +90,6 @@ public class JenaMain {
         System.out.println(JenaMain.wordSimilarity("Sport", "Schwimmen"));
         System.out.println(JenaMain.wordSimilarity("Sport", "Fleisch"));
         System.out.println(JenaMain.wordSimilarity("Sport", "Eis"));
-        System.out.println(JenaMain.wordSimilarity("Farbe", "Schwarz"));
+        System.out.println(JenaMain.wordSimilarity("Mann", "Frau"));
     }
 }

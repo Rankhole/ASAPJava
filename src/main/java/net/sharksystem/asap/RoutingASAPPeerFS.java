@@ -1,6 +1,8 @@
 package net.sharksystem.asap;
 
-import net.sharksystem.asap.RDFComparator.RDFComparator;
+import de.linguatools.disco.CorruptConfigFileException;
+import net.sharksystem.asap.RDFComparator.*;
+import net.sharksystem.asap.RDFModel.JenaRDFModel;
 import net.sharksystem.asap.RDFModel.RDFModel;
 
 import java.io.IOException;
@@ -9,34 +11,37 @@ import java.util.List;
 
 public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
 
-    RDFModel rdfModel;
+    RDFComparator rdfComparator;
 
     // true = use whitelist, false = use blacklist
     private boolean useWhitelist = true;
     
     private float similarityValue = 0.5f;
 
-    private RDFComparator rdfComparator;
-
-    public RoutingASAPPeerFS(CharSequence owner, CharSequence rootFolder, Collection<CharSequence> supportFormats, RDFModel rdfModel) throws IOException, ASAPException {
+    public RoutingASAPPeerFS(CharSequence owner, CharSequence rootFolder, Collection<CharSequence> supportFormats) throws IOException, ASAPException {
         super(owner, rootFolder, supportFormats);
-        setRDFModel(rdfModel);
+        rdfComparator = new LiteralStringComparator(new JenaRDFModel());
+    }
+
+    public RoutingASAPPeerFS(CharSequence owner, CharSequence rootFolder, Collection<CharSequence> supportFormats, RDFComparator rdfComparator) throws IOException, ASAPException {
+        super(owner, rootFolder, supportFormats);
+        this.rdfComparator = rdfComparator;
     }
 
     @Override
     public void setRDFModel(RDFModel rdfModel) {
-        this.rdfModel = rdfModel;
+        this.rdfComparator.setRDFModel(rdfModel);
     }
 
     @Override
     public void setRoutingWhitelist(RDFModel rdfModel) {
-        this.rdfModel = rdfModel;
+        this.rdfComparator.setRDFModel(rdfModel);
         useWhitelistForRouting();
     }
 
     @Override
     public void setRoutingBlacklist(RDFModel rdfModel) {
-        this.rdfModel = rdfModel;
+        this.rdfComparator.setRDFModel(rdfModel);
         useBlacklistForRouting();
     }
 
@@ -53,7 +58,7 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
     @Override
     public void chunkReceived(String format, String senderE2E, String uri, int era,
                               List<ASAPHop> asapHopList) throws IOException {
-        boolean comparisonResult = compareWithRDFModel(uri);
+        boolean comparisonResult = this.rdfComparator.compareWithRDFModel(uri, similarityValue);
         if((comparisonResult && !useWhitelist) || (!comparisonResult && useWhitelist)) {
             try {
                 // Löschen aus Speicher, damit Routing nicht weiter erfolgen kann.
@@ -65,21 +70,6 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
         }
     }
 
-    public boolean compareWithRDFModel(String uri) {
-        List<String> rdfModelList = rdfModel.getModelAttributesAsList();
-        for(String rdfModelAttribute : rdfModelList) {
-            float similarityWithUri = compareAttributeWithUri(uri, rdfModelAttribute);
-            if (similarityWithUri > similarityValue){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public float compareAttributeWithUri(String uri, String rdfModelAttribute) {
-        return rdfComparator.compare(uri, rdfModelAttribute);
-    }
-
     public float getSimilarityValue() {
         return similarityValue;
     }
@@ -87,4 +77,10 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
     public void setSimilarityValue(float similarityValue) {
         this.similarityValue = similarityValue;
     }
+
+    @Override
+    public void setRDFComparator(RDFComparator rdfComparator) {
+        this.rdfComparator = rdfComparator;
+    }
+
 }

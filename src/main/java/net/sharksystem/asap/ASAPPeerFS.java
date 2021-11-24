@@ -29,15 +29,6 @@ public class ASAPPeerFS extends ASAPInternalPeerWrapper implements ASAPPeerServi
     @Override
     public void chunkReceived(String format, String senderE2E, String uri, int era,
                               List<ASAPHop> asapHopList) throws IOException {
-        // vergleich der uris!
-        // wenn nicht gut -> WEGWERFEN!
-        try {
-            ASAPStorage asapStorage = getASAPStorage(format);
-            asapStorage.getChunkStorage().dropChunks(era);
-        } catch (ASAPException e) {
-            e.printStackTrace();
-        }
-
         // .........
 
         StringBuilder sb = new StringBuilder();
@@ -56,7 +47,7 @@ public class ASAPPeerFS extends ASAPInternalPeerWrapper implements ASAPPeerServi
 
         sb = new StringBuilder();
         sb.append("\n++++++++++++++++++++++++++++++++++++++++++ chunkReceived +++++++++++++++++++++++++++++++++++++++++++\n");
-        sb.append("E2E|P2P: " + senderE2E +  " | " + asapHopList.get(asapHopList.size()-1).sender() + " | uri: " + uri + " | era: " + era + " | appFormat: " + format);
+        sb.append("E2E|P2P: ").append(senderE2E).append(" | ").append(asapHopList.get(asapHopList.size() - 1).sender()).append(" | uri: ").append(uri).append(" | era: ").append(era).append(" | appFormat: ").append(format);
         sb.append("\n");
         sb.append(hopListString);
         sb.append("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");

@@ -1,8 +1,9 @@
 package net.sharksystem.asap;
 
+import net.sharksystem.asap.RDFComparator.RDFComparator;
 import net.sharksystem.asap.RDFModel.RDFModel;
 
-public interface RoutingASAPPeer {
+public interface RoutingASAPPeer extends ASAPPeer{
     /**
      * Set the base data which incoming message URI's are matched with. Default Routing should be with whitelist.
      */
@@ -30,11 +31,9 @@ public interface RoutingASAPPeer {
      */
     void useBlacklistForRouting();
 
-    boolean compareWithRDFModel(String uri);
-
-    float compareAttributeWithUri(String uri, String rdfModelAttribute);
-
     float getSimilarityValue();
 
     void setSimilarityValue(float similarityValue);
+
+    void setRDFComparator(RDFComparator rdfComparator);
 }
