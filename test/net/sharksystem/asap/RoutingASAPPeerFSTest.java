@@ -8,12 +8,14 @@ import net.sharksystem.asap.apps.testsupport.ASAPRoutingTestPeerFS;
 import net.sharksystem.asap.apps.testsupport.ASAPTestPeerFS;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.mockAndTemplates.TestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.Jena;
 import org.apache.jena.rdf.model.Literal;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -32,6 +34,8 @@ public class RoutingASAPPeerFSTest {
 
     @Before
     public void setUp() throws IOException, ASAPException {
+        // delete directory „testPeerFS” to prevent errors when running twice
+        FileUtils.deleteDirectory(new File("testPeerFS"));
         Collection<CharSequence> formats = new ArrayList<>();
         formats.add("ASAPRouter");
 

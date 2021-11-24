@@ -3,6 +3,7 @@ package net.sharksystem.asap.mockAndTemplates;
 import net.sharksystem.asap.ASAPException;
 import net.sharksystem.asap.ASAPPeer;
 import net.sharksystem.asap.apps.testsupport.ASAPTestPeerFS;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.*;
@@ -43,6 +44,8 @@ public class UseThisAsTemplate4YourAppTests {
 
     @Test
     public void asapTestExample() throws IOException, ASAPException, InterruptedException {
+        // delete directory „testPeerFS” to prevent errors when running twice
+        FileUtils.deleteDirectory(new File("testPeerFS"));
         ///////////////// ALICE //////////////////////////////////////////////////////////////
         // setup mocked peer / asap application and activity in android
         Collection<CharSequence> formats = new ArrayList<>();

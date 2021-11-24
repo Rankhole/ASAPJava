@@ -15,6 +15,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Collection;
 
+/**
+ * Wrapper class for simulating encounter using real TCP/IP
+ */
 public class ASAPRoutingTestPeerFS extends RoutingASAPPeerFS {
     private ServerSocket serverSocket = null;
     private Socket socket = null;
