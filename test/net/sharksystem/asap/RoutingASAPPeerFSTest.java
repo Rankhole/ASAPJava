@@ -129,6 +129,30 @@ public class RoutingASAPPeerFSTest {
     }
 
     @Test
+    public void encounter_differentUrisDoNotGetTransmitGoodAtAll() throws InterruptedException, IOException, ASAPException {
+
+        String uriAlice = "aliceUri1";
+        String uriBob = "bobUri1";
+
+        scenario1_sendMessageWithUris(uriAlice, uriBob);
+
+        uriAlice = "aliceUri2";
+        uriBob = "bobUri2";
+        scenario1_sendMessageWithUris(uriAlice, uriBob);
+
+        uriAlice = "aliceUri3";
+        uriBob = "bobUri3";
+        scenario1_sendMessageWithUris(uriAlice, uriBob);
+
+        uriAlice = "aliceUri4";
+        uriBob = "bobUri4";
+        scenario1_sendMessageWithUris(uriAlice, uriBob);
+
+        // check results in main folder: testPeerFS -> ALICE/BOB
+        // Bob doesn't have all topics from Alice, Alice doesn't have all topics from Bob
+    }
+
+    @Test
     public void encounter_sameUrisGetTransmitted() throws InterruptedException, IOException, ASAPException {
 
         String uriAlice = "topic1";
