@@ -37,4 +37,6 @@ public interface ASAPChunkStorage {
     ASAPMessages getASAPMessages(CharSequence uri, int fromEra, int toEra) throws IOException;
 
     ASAPMessages getASAPMessages(String uri) throws ASAPException, IOException;
+
+    String getRootDirectory();
 }
