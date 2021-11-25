@@ -7,11 +7,13 @@ import net.sharksystem.asap.RDFModel.RDFModel;
 import net.sharksystem.asap.apps.testsupport.ASAPRoutingTestPeerFS;
 import net.sharksystem.asap.apps.testsupport.ASAPTestPeerFS;
 import net.sharksystem.asap.cmdline.TCPStream;
+import net.sharksystem.asap.helper.RoutingASAPPeerFSTestHelper;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.mockAndTemplates.TestUtils;
 import net.sharksystem.asap.utils.ASAPPeerHandleConnectionThread;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -24,6 +26,8 @@ import java.util.Random;
 import static net.sharksystem.asap.mockAndTemplates.TestUtils.*;
 
 public class RoutingASAPPeerFSTest {
+
+    RoutingASAPPeerFSTestHelper testHelper;
 
     private ASAPRoutingTestPeerFS aliceRoutingTestPeer, bobRoutingTestPeer;
     private RDFModel rdfModel;
@@ -56,15 +60,21 @@ public class RoutingASAPPeerFSTest {
     public void setUp() throws IOException, ASAPException {
         // delete directory „testPeerFS” to prevent errors when running twice
         FileUtils.deleteDirectory(new File("testPeerFS"));
+
+        String rootfolder = "./testPeerFS";
+
         formats = new ArrayList<>();
         formats.add(format);
+
+        testHelper = new RoutingASAPPeerFSTestHelper(rootfolder, format);
+
 
         this.rdfModel = new JenaRDFModel();
 
         this.rdfComparator = new LiteralStringComparator(rdfModel);
 
-        this.aliceRoutingTestPeer = new ASAPRoutingTestPeerFS("ALICE", "./testPeerFS/ALICE", formats, rdfComparator);
-        this.bobRoutingTestPeer = new ASAPRoutingTestPeerFS("BOB", "./testPeerFS/BOB", formats, rdfComparator);
+        this.aliceRoutingTestPeer = new ASAPRoutingTestPeerFS("ALICE", rootfolder + "/ALICE", formats, rdfComparator);
+        this.bobRoutingTestPeer = new ASAPRoutingTestPeerFS("BOB", rootfolder + "/BOB", formats, rdfComparator);
 
         aliceRoutingTestPeer.useBlacklistForRouting();
         bobRoutingTestPeer.useBlacklistForRouting();
@@ -172,8 +182,129 @@ public class RoutingASAPPeerFSTest {
         uriBob = "topic1";
         scenario1_sendMessageWithUris(uriAlice, uriBob);
 
-        // check results in main folder: testPeerFS -> ALICE/BOB
-        // Bob doesn't have all topics from Alice, Alice doesn't have all topics from Bob
+    }
+
+    @Test
+    public void onlyBlacklistEntriesSent() throws InterruptedException, IOException, ASAPException {
+
+        //this is in the rdf model of both peers
+        String uri = "Eis";
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        // each message should have created a new era, so there should be a meta and content file in each subfolder
+        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 1));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 3));
+
+        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 0));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 2));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+    }
+
+    @Test
+    public void onlyNonBlacklistEntriesSent() throws InterruptedException, IOException, ASAPException {
+
+        String uri = "Pinguin";
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        scenario1_sendMessageWithUris(uri, uri);
+
+        // each message should have created a new era, so there should be a meta and content file in each subfolder
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 1));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 3));
+
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 0));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 2));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+    }
+
+    @Test
+    public void bugShowcase_blacklist_thisDoesNotWorkAnymore() throws InterruptedException, IOException, ASAPException {
+
+        // this is blacklisted, should be deleted out of incoming storage
+        String uri = "Eis";
+
+        scenario1_sendMessageWithUris("Tiger", uri);
+
+        scenario1_sendMessageWithUris(uri, "Elefant");
+
+        scenario1_sendMessageWithUris("Hallo", uri);
+
+        scenario1_sendMessageWithUris(uri, "Hallo");
+
+        // expected: no era 0 and era 2 of Bob, no era 1 and 3 of Alice
+        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Elefant", 1));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Tiger", 0));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Hallo", 2));
+        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+    }
+
+    @Test
+    public void bugShowcase_NonBlacklist_thisDoesNotWorkAnymore() throws InterruptedException, IOException, ASAPException {
+
+        // not on blacklist, so all entries should persist (should be the same as ASAPPeerFS)
+        String uri = "Pinguin";
+
+        scenario1_sendMessageWithUris("Tiger", uri);
+
+        scenario1_sendMessageWithUris(uri, "Elefant");
+
+        scenario1_sendMessageWithUris("Hallo", uri);
+
+        scenario1_sendMessageWithUris(uri, "Hallo");
+
+        // expected: ALL eras should exist on both sides
+        // actual: alice missing „Elefant”, bob missing the last „Pinguin”...
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Elefant", 1));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Tiger", 0));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Hallo", 2));
+        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+    }
+
+    @Test
+    public void bugShowcase_blacklist_thisDoesNotWorkAnymore2() throws InterruptedException, IOException, ASAPException {
+
+        // this is blacklisted, should be deleted out of incoming storage
+        String uri = "Eis";
+
+        scenario1_sendMessageWithUris("Tiger", uri);
+
+        // this seems to break the engine
+        scenario1_sendMessageWithUris("THISBREAKSEVERYTHING", "Elefant");
+
+        scenario1_sendMessageWithUris("Hallo", uri);
+
+        scenario1_sendMessageWithUris(uri, "Hallo");
+
+        // expected: no era 0 and era 2 of Bob, no era 3 of Alice
+        // actual: alice has no era 1 of bob („Elefant” went missing! ??? )
     }
 
     // sends messages with given uri, starts and stops encounter
