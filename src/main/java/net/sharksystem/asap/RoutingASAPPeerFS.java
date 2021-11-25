@@ -4,6 +4,7 @@ import de.linguatools.disco.CorruptConfigFileException;
 import net.sharksystem.asap.RDFComparator.*;
 import net.sharksystem.asap.RDFModel.JenaRDFModel;
 import net.sharksystem.asap.RDFModel.RDFModel;
+import net.sharksystem.asap.engine.ASAPEngineFS;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -63,7 +64,8 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
             try {
                 // Löschen aus Speicher, damit Routing nicht weiter erfolgen kann.
                 ASAPStorage asapStorage = getASAPStorage(format);
-                asapStorage.getChunkStorage().dropChunks(era);
+                String rootdir = asapStorage.getChunkStorage().getRootDirectory();
+                ASAPEngineFS.removeFolder(rootdir + "/" + senderE2E + "/" + era);
             } catch (ASAPException e) {
                 e.printStackTrace();
             }
