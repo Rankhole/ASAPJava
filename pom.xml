@@ -37,22 +37,6 @@
             <artifactId>commons-text</artifactId>
             <version>1.9</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/de.sciss/ws4j -->
-        <dependency>
-            <groupId>de.sciss</groupId>
-            <artifactId>ws4j</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/de.sciss/jawjaw
-        this is for ws4j to work-->
-        <dependency>
-            <groupId>de.sciss</groupId>
-            <artifactId>jawjaw</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-
         <dependency>
             <groupId>com.github.linguatools</groupId>
             <artifactId>disco</artifactId>
@@ -93,5 +77,27 @@
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.1.0</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!-- don't include any of the vector files for disco in the actual jar -->
+                <excludes>
+                    <exclude>**/*.vec</exclude>
+                    <exclude>**/*.wlfreq</exclude>
+                    <exclude>**/*.denseMatrix</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
 </project>

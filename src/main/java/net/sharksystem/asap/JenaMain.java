@@ -1,25 +1,15 @@
 package net.sharksystem.asap;
 
-import de.linguatools.disco.*;
-import edu.cmu.lti.jawjaw.pobj.POS;
-import edu.cmu.lti.lexical_db.ILexicalDatabase;
-import edu.cmu.lti.lexical_db.NictWordNet;
-import edu.cmu.lti.lexical_db.data.Concept;
-import edu.cmu.lti.ws4j.Relatedness;
-import edu.cmu.lti.ws4j.RelatednessCalculator;
-import edu.cmu.lti.ws4j.impl.Lin;
-import edu.cmu.lti.ws4j.impl.WuPalmer;
-import edu.cmu.lti.ws4j.util.WS4JConfiguration;
-import org.apache.jena.atlas.iterator.Iter;
+import de.linguatools.disco.CorruptConfigFileException;
+import de.linguatools.disco.DISCO;
+import de.linguatools.disco.WrongWordspaceTypeException;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.VCARD;
 
-import javax.swing.plaf.nimbus.State;
-import java.io.*;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class JenaMain {
 
