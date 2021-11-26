@@ -1,14 +1,11 @@
 package net.sharksystem.asap.apps.testsupport;
 
 import net.sharksystem.asap.ASAPException;
-import net.sharksystem.asap.ASAPPeerFS;
 import net.sharksystem.asap.EncounterConnectionType;
 import net.sharksystem.asap.RDFComparator.LiteralStringComparator;
 import net.sharksystem.asap.RDFComparator.RDFComparator;
 import net.sharksystem.asap.RDFModel.JenaRDFModel;
-import net.sharksystem.asap.RDFModel.RDFModel;
 import net.sharksystem.asap.RoutingASAPPeerFS;
-import org.apache.jena.Jena;
 
 import java.io.IOException;
 import java.net.ServerSocket;
