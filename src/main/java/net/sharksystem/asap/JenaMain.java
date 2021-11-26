@@ -11,6 +11,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Class to test out some libraries, not essential to ASAP at all
+ */
 public class JenaMain {
 
     public static DISCO disco;
