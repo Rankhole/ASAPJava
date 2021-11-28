@@ -5,13 +5,10 @@ import net.sharksystem.asap.RDFComparator.RDFComparator;
 import net.sharksystem.asap.RDFModel.JenaRDFModel;
 import net.sharksystem.asap.RDFModel.RDFModel;
 import net.sharksystem.asap.apps.testsupport.ASAPRoutingTestPeerFS;
-import net.sharksystem.asap.cmdline.TCPStream;
 import net.sharksystem.asap.helper.RoutingASAPPeerFSTestHelper;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.mockAndTemplates.TestUtils;
-import net.sharksystem.asap.utils.ASAPPeerHandleConnectionThread;
 import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,6 +77,14 @@ public class RoutingASAPPeerFSTest {
         bobRoutingTestPeer.useBlacklistForRouting();
 
         firstRun = true;
+    }
+
+    @Test
+    public void chunkRecievedTest_blacklistWithBlocking(){
+        aliceRoutingTestPeer.useBlacklistForRouting();
+
+        //todo create unit tests by mocking the comparator
+
     }
 
     @Test
