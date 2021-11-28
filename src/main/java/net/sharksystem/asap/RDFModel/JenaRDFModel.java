@@ -1,16 +1,13 @@
 package net.sharksystem.asap.RDFModel;
 
-import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
-import org.w3c.dom.Node;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class JenaRDFModel implements RDFModel {
 
