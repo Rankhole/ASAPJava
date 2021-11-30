@@ -1,11 +1,11 @@
-package net.sharksystem.asap.apps.testsupport;
+package net.sharksystem.asap.testsupport;
 
 import net.sharksystem.asap.ASAPException;
 import net.sharksystem.asap.EncounterConnectionType;
+import net.sharksystem.asap.RoutingASAPPeerFS;
 import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
 import net.sharksystem.asap.rdfcomparator.RDFComparator;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
-import net.sharksystem.asap.RoutingASAPPeerFS;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -13,7 +13,7 @@ import java.net.Socket;
 import java.util.Collection;
 
 /**
- * Wrapper class for simulating encounter using real TCP/IP
+ * Wrapper class for simulating encounter using Sockets
  */
 public class ASAPRoutingTestPeerFS extends RoutingASAPPeerFS {
     private ServerSocket serverSocket = null;
