@@ -13,6 +13,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <junit.jupiter.version>5.8.1</junit.jupiter.version>
         <junit.platform.version>1.8.1</junit.platform.version>
+        <asap.java.version>0.7.0</asap.java.version>
     </properties>
 
     <repositories>
@@ -78,6 +79,16 @@
             <artifactId>mockito-core</artifactId>
             <version>4.1.0</version>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Add ASAPJava jar. Define version under <properties> section above. Make sure
+             that the given version jar exists in the libs folder. -->
+        <dependency>
+            <groupId>net.sharksystem</groupId>
+            <artifactId>ASAPJava</artifactId>
+            <version>${asap.java.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/ASAPJava_${asap.java.version}.jar</systemPath>
         </dependency>
 
     </dependencies>

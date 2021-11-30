@@ -1,9 +1,9 @@
 package net.sharksystem.asap;
 
-import net.sharksystem.asap.rdfcomparator.*;
+import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
+import net.sharksystem.asap.rdfcomparator.RDFComparator;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
 import net.sharksystem.asap.rdfmodel.RDFModel;
-import net.sharksystem.asap.engine.ASAPEngineFS;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -63,8 +63,7 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer{
             try {
                 // Löschen aus Speicher, damit Routing nicht weiter erfolgen kann.
                 ASAPStorage asapStorage = getASAPStorage(format);
-                String rootdir = asapStorage.getChunkStorage().getRootDirectory();
-                ASAPEngineFS.removeFolder(rootdir + "/" + senderE2E + "/" + era);
+                asapStorage.getExistingIncomingStorage(senderE2E).getChunkStorage().dropChunks(era);
             } catch (ASAPException e) {
                 e.printStackTrace();
             }
