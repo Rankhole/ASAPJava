@@ -1,8 +1,8 @@
-package net.sharksystem.asap.RDFComparator;
+package net.sharksystem.asap.rdfcomparator;
 
 import de.linguatools.disco.CorruptConfigFileException;
 import de.linguatools.disco.DISCO;
-import net.sharksystem.asap.RDFModel.RDFModel;
+import net.sharksystem.asap.rdfmodel.RDFModel;
 
 import java.io.IOException;
 

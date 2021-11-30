@@ -1,4 +1,4 @@
-package net.sharksystem.asap.RDFModel;
+package net.sharksystem.asap.rdfmodel;
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;

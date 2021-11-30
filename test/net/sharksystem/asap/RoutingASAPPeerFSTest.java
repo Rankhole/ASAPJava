@@ -1,9 +1,9 @@
 package net.sharksystem.asap;
 
-import net.sharksystem.asap.RDFComparator.LiteralStringComparator;
-import net.sharksystem.asap.RDFComparator.RDFComparator;
-import net.sharksystem.asap.RDFModel.JenaRDFModel;
-import net.sharksystem.asap.RDFModel.RDFModel;
+import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
+import net.sharksystem.asap.rdfcomparator.RDFComparator;
+import net.sharksystem.asap.rdfmodel.JenaRDFModel;
+import net.sharksystem.asap.rdfmodel.RDFModel;
 import net.sharksystem.asap.apps.testsupport.ASAPRoutingTestPeerFS;
 import net.sharksystem.asap.helper.RoutingASAPPeerFSTestHelper;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;

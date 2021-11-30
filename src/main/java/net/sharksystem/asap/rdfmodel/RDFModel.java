@@ -1,4 +1,4 @@
-package net.sharksystem.asap.RDFModel;
+package net.sharksystem.asap.rdfmodel;
 
 import java.util.List;
 

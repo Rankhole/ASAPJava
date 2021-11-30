@@ -1,7 +1,7 @@
 package net.sharksystem.asap;
 
-import net.sharksystem.asap.RDFComparator.RDFComparator;
-import net.sharksystem.asap.RDFModel.RDFModel;
+import net.sharksystem.asap.rdfcomparator.RDFComparator;
+import net.sharksystem.asap.rdfmodel.RDFModel;
 
 public interface RoutingASAPPeer extends ASAPPeer{
     /**

@@ -1,6 +1,6 @@
-package net.sharksystem.asap.RDFComparator;
+package net.sharksystem.asap.rdfcomparator;
 
-import net.sharksystem.asap.RDFModel.RDFModel;
+import net.sharksystem.asap.rdfmodel.RDFModel;
 
 public class LiteralStringComparator extends RDFComparatorTemplateImpl {
     public LiteralStringComparator(RDFModel rdfModel) {
