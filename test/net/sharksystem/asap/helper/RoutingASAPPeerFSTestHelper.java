@@ -1,8 +1,6 @@
 package net.sharksystem.asap.helper;
 
 import net.sharksystem.asap.ASAPException;
-import net.sharksystem.asap.engine.ASAPEngine;
-import net.sharksystem.asap.engine.ASAPEngineFS;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,9 +25,9 @@ public class RoutingASAPPeerFSTestHelper {
      * @throws ASAPException
      */
     public boolean senderEraShouldExist(String owner, String sender, String uri, int era) throws IOException, ASAPException {
-        String path = new StringBuilder().append(rootdir).append("/").append(owner)
-                .append("/").append(format).append("/").append(sender).append("/")
-                .append(era).append("/").append(uri).toString();
+        String path = rootdir + "/" + owner +
+                "/" + format + "/" + sender + "/" +
+                era + "/" + uri;
         String pathToMetaFile = path + ".meta";
         String pathToContentFile = path + ".content";
         System.out.println("PATH: " + path);
