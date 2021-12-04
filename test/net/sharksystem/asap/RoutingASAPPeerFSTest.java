@@ -4,7 +4,6 @@ import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
 import net.sharksystem.asap.rdfcomparator.RDFComparator;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
 import net.sharksystem.asap.rdfmodel.RDFModel;
-import net.sharksystem.asap.helper.RoutingASAPPeerFSTestHelper;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.mockAndTemplates.TestUtils;
 import net.sharksystem.asap.testsupport.ASAPRoutingTestPeerFS;
@@ -19,8 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class RoutingASAPPeerFSTest {
-
-    RoutingASAPPeerFSTestHelper testHelper;
 
     private ASAPRoutingTestPeerFS aliceRoutingTestPeer, bobRoutingTestPeer;
     private RDFModel rdfModel;
@@ -60,9 +57,6 @@ public class RoutingASAPPeerFSTest {
         formats = new ArrayList<>();
         formats.add(format);
 
-        // helper class with usefull testing functions
-        testHelper = new RoutingASAPPeerFSTestHelper(rootfolder, format);
-
         // default model found under: src/main/resources/rdfModel.rdf
         this.rdfModel = new JenaRDFModel();
 
@@ -80,7 +74,7 @@ public class RoutingASAPPeerFSTest {
     }
 
     @Test
-    public void chunkRecievedTest_blacklistWithBlocking(){
+    public void chunkRecievedTest_blacklistWithBlocking() {
         aliceRoutingTestPeer.useBlacklistForRouting();
 
         //todo create unit tests by mocking the comparator
@@ -102,8 +96,8 @@ public class RoutingASAPPeerFSTest {
         Assertions.assertTrue(bobRoutingTestPeer.getASAPStorage(format).getChunkStorage().existsChunk(uriAlice, 1));
 
         // each message should have created a new era, so there should be a meta and content file in each subfolder
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uriBob, 0));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uriAlice, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uriBob, 0));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uriAlice, 0));
     }
 
     @Test
@@ -121,8 +115,8 @@ public class RoutingASAPPeerFSTest {
         Assertions.assertTrue(bobRoutingTestPeer.getASAPStorage(format).getChunkStorage().existsChunk(uriAlice, 1));
 
         // Bob should not have saved alice's message, but alice should have saved bob's message
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uriBob, 0));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uriAlice, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uriBob, 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uriAlice, 0));
     }
 
     @Test
@@ -140,8 +134,8 @@ public class RoutingASAPPeerFSTest {
         Assertions.assertTrue(bobRoutingTestPeer.getASAPStorage(format).getChunkStorage().existsChunk(uriAlice, 1));
 
         // Both peers should not have saved each others messages
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uriBob, 0));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uriAlice, 0));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uriBob, 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uriAlice, 0));
     }
 
     @Test
@@ -159,15 +153,15 @@ public class RoutingASAPPeerFSTest {
         simpleEncounterWithMessageExchange(uri, uri);
 
         // each message should have created a new era, so there should be a meta and content file in each subfolder
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 1));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 3));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 1));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 3));
 
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 0));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 2));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 2));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
     }
 
     @Test
@@ -184,15 +178,15 @@ public class RoutingASAPPeerFSTest {
         simpleEncounterWithMessageExchange(uri, uri);
 
         // each message should have created a new era, so there should be a meta and content file in each subfolder
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 1));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 3));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 3));
 
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 0));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 2));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
     }
 
     @Test
@@ -210,15 +204,15 @@ public class RoutingASAPPeerFSTest {
         simpleEncounterWithMessageExchange(uri, "Hallo");
 
         // expected: no era 0 and era 2 of Bob, no era 1 and 3 of Alice
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Elefant", 1));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Hallo", 3));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
 
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Tiger", 0));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Hallo", 2));
-        Assertions.assertFalse(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
     }
 
     @Test
@@ -237,15 +231,15 @@ public class RoutingASAPPeerFSTest {
 
         // expected: ALL eras should exist on both sides
         // actual: alice missing „Elefant”, bob missing the last „Pinguin”...
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 0));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Elefant", 1));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", uri, 2));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("ALICE", "BOB", "Hallo", 3));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
 
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Tiger", 0));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 1));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", "Hallo", 2));
-        Assertions.assertTrue(testHelper.senderEraShouldExist("BOB", "ALICE", uri, 3));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
     }
 
     @Test
@@ -382,5 +376,10 @@ public class RoutingASAPPeerFSTest {
         bobRoutingTestPeer.stopEncounter(aliceRoutingTestPeer);
         // give your app a moment to process
         Thread.sleep(1000);
+    }
+
+    public boolean senderEraShouldExist(ASAPPeer peer, String sender, String uri, int era)
+            throws IOException, ASAPException {
+        return peer.getASAPStorage(format).getExistingIncomingStorage(sender).getChunkStorage().existsChunk(uri, era);
     }
 }
