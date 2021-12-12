@@ -10,8 +10,7 @@ public class SemanticComparator extends RDFComparatorTemplateImpl {
 
     private DISCO disco = DISCO.load("src/main/resources/cc.de.300.col.denseMatrix/cc.de.300-COL.denseMatrix");
 
-    public SemanticComparator(RDFModel rdfModel) throws IOException, CorruptConfigFileException {
-        super(rdfModel);
+    public SemanticComparator() throws IOException, CorruptConfigFileException {
     }
 
     @Override

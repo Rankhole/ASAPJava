@@ -1,7 +1,9 @@
 package net.sharksystem.asap;
 
+import net.sharksystem.asap.apps.testsupport.ASAPTestPeerFS;
 import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
 import net.sharksystem.asap.rdfcomparator.RDFComparator;
+import net.sharksystem.asap.rdfcomparator.SparqlComparator;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
 import net.sharksystem.asap.rdfmodel.RDFModel;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
@@ -19,7 +21,7 @@ import java.util.Collection;
 
 public class RoutingASAPPeerFSTest {
 
-    private ASAPRoutingTestPeerFS aliceRoutingTestPeer, bobRoutingTestPeer;
+    private ASAPRoutingTestPeerFS aliceRoutingTestPeer, bobRoutingTestPeer, claraRoutingTestPeer;
     private RDFModel rdfModel;
     private RDFComparator rdfComparator;
 
@@ -61,11 +63,12 @@ public class RoutingASAPPeerFSTest {
         this.rdfModel = new JenaRDFModel();
 
         // default comparator: literal string matcher
-        this.rdfComparator = new LiteralStringComparator(rdfModel);
+        this.rdfComparator = new LiteralStringComparator();
 
         // ASAPRoutingTestPeerFS is the same as ASAPTestPeerFS with a RoutingASAPPeerFS instead of ASAPPeerFS
-        this.aliceRoutingTestPeer = new ASAPRoutingTestPeerFS("ALICE", rootfolder + "/ALICE", formats, rdfComparator);
-        this.bobRoutingTestPeer = new ASAPRoutingTestPeerFS("BOB", rootfolder + "/BOB", formats, rdfComparator);
+        this.aliceRoutingTestPeer = new ASAPRoutingTestPeerFS("ALICE", rootfolder + "/ALICE", formats, rdfComparator, rdfModel);
+        this.bobRoutingTestPeer = new ASAPRoutingTestPeerFS("BOB", rootfolder + "/BOB", formats, rdfComparator, rdfModel);
+        this.claraRoutingTestPeer = new ASAPRoutingTestPeerFS("CLARA", rootfolder + "/CLARA", formats, rdfComparator, rdfModel);
 
         aliceRoutingTestPeer.useBlacklistForRouting();
         bobRoutingTestPeer.useBlacklistForRouting();
@@ -243,96 +246,156 @@ public class RoutingASAPPeerFSTest {
     }
 
     @Test
-    public void multiEncounter_AndTopicsNotFullyTransmitted() throws InterruptedException, IOException, ASAPException {
-
-        String uriAlice = "topic1";
-        String uriBob = "topic1";
-
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "topic2";
-        uriBob = "topic1";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "topic2";
-        uriBob = "topic2";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "topic3";
-        uriBob = "topic1";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        // check results in main folder: testPeerFS -> ALICE/BOB
-        // Bob doesn't have all topics from Alice, Alice doesn't have all topics from Bob
-    }
-
-    @Test
-    public void multiEncounter_differentUrisDoNotGetTransmitGoodAtAll() throws InterruptedException, IOException, ASAPException {
-
-        String uriAlice = "aliceUri1";
-        String uriBob = "bobUri1";
-
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "aliceUri2";
-        uriBob = "bobUri2";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "aliceUri3";
-        uriBob = "bobUri3";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "aliceUri4";
-        uriBob = "bobUri4";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        // check results in main folder: testPeerFS -> ALICE/BOB
-        // Bob doesn't have all topics from Alice, Alice doesn't have all topics from Bob
-    }
-
-    @Test
-    public void multiEncounter_sameUrisGetTransmitted() throws InterruptedException, IOException, ASAPException {
-
-        String uriAlice = "topic1";
-        String uriBob = "topic1";
-
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "topic1";
-        uriBob = "topic1";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "topic1";
-        uriBob = "topic1";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-        uriAlice = "topic1";
-        uriBob = "topic1";
-        simpleEncounterWithMessageExchange(uriAlice, uriBob);
-
-    }
-
-    @Test
-    public void bugShowcase_blacklist_thisDoesNotWorkAnymore2() throws InterruptedException, IOException, ASAPException {
-
-        // this is blacklisted, should be deleted out of incoming storage
-        String uri = "Eis";
+    public void sparqlComparator_nonBlacklistEntry() throws InterruptedException, IOException, ASAPException {
+        aliceRoutingTestPeer.setRDFComparator(new SparqlComparator());
+        bobRoutingTestPeer.setRDFComparator(new SparqlComparator());
+        // not on blacklist, so all entries should persist (should be the same as ASAPPeerFS)
+        String uri = "Pinguin";
 
         simpleEncounterWithMessageExchange("Tiger", uri);
 
-        // this seems to break the engine
-        simpleEncounterWithMessageExchange("THISBREAKSEVERYTHING", "Elefant");
+        simpleEncounterWithMessageExchange(uri, "Elefant");
 
         simpleEncounterWithMessageExchange("Hallo", uri);
 
         simpleEncounterWithMessageExchange(uri, "Hallo");
 
-        // expected: no era 0 and era 2 of Bob, no era 3 of Alice
-        // actual: alice has no era 1 of bob („Elefant” went missing! ??? )
+        // expected: ALL eras should exist on both sides
+        // actual: alice missing „Elefant”, bob missing the last „Pinguin”...
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+    }
+
+    @Test
+    public void sparqlComparator_blacklistEntry() throws InterruptedException, IOException, ASAPException {
+        aliceRoutingTestPeer.setRDFComparator(new SparqlComparator());
+        bobRoutingTestPeer.setRDFComparator(new SparqlComparator());
+        // this is blacklisted, should be deleted out of incoming storage
+        String uri = "Eis";
+
+        simpleEncounterWithMessageExchange("Tiger", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Elefant");
+
+        simpleEncounterWithMessageExchange("Hallo", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Hallo");
+
+        // expected: no era 0 and era 2 of Bob, no era 1 and 3 of Alice
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+    }
+
+    @Test
+    public void multihopTests_blacklistEntry() throws IOException, ASAPException, InterruptedException {
+        // this is blacklisted, should be deleted out of incoming storage
+        String uri = "Eis";
+
+        simpleEncounterWithMessageExchange("Tiger", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Elefant");
+
+        simpleEncounterWithMessageExchange("Hallo", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Hallo");
+
+        // expected: no era 0 and era 2 of Bob, no era 1 and 3 of Alice
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+
+        Assertions.assertTrue(aliceRoutingTestPeer.isASAPRoutingAllowed(format));
+        // exchange between alice and clara
+        simpleEncounterWithMessageExchange(aliceRoutingTestPeer, claraRoutingTestPeer, "HelloToClara", "FromClara");
+        // Alice should have received message from Clara
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "CLARA", "FromClara", 0));
+        // messages from Alice should have arrived at Clara
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertFalse(senderEraShouldExist(claraRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertFalse(senderEraShouldExist(claraRoutingTestPeer, "ALICE", uri, 3));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", "HelloToClara", 4));
+
+        // messages from Bob, which Alice had previously received, should have arrived at Clara
+        // BUG: only the first message is routed
+        Assertions.assertFalse(senderEraShouldExist(claraRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertFalse(senderEraShouldExist(claraRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "BOB", "Hallo", 3));
+    }
+
+    @Test
+    public void multihopTests_nonBlacklistEntry() throws IOException, ASAPException, InterruptedException {
+        // this is blacklisted, should be deleted out of incoming storage
+        String uri = "Pinguin";
+
+        simpleEncounterWithMessageExchange("Tiger", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Elefant");
+
+        simpleEncounterWithMessageExchange("Hallo", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Hallo");
+
+        // expected: no era 0 and era 2 of Bob, no era 1 and 3 of Alice
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+
+        Assertions.assertTrue(aliceRoutingTestPeer.isASAPRoutingAllowed(format));
+        // exchange between alice and clara
+        simpleEncounterWithMessageExchange(aliceRoutingTestPeer, claraRoutingTestPeer, "HelloToClara", "FromClara");
+        // Alice should have received message from Clara
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "CLARA", "FromClara", 0));
+        // messages from Alice should have arrived at Clara
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", uri, 3));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "ALICE", "HelloToClara", 4));
+
+        // messages from Bob, which Alice had previously received, should have arrived at Clara
+        // BUG: only the first message is routed
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(claraRoutingTestPeer, "BOB", "Hallo", 3));
     }
 
     // sends messages with given uri, starts and then stops the encounter
     public void simpleEncounterWithMessageExchange(String uriAlice, String uriBob)
+            throws IOException, ASAPException, InterruptedException {
+
+        simpleEncounterWithMessageExchange(aliceRoutingTestPeer, bobRoutingTestPeer, uriAlice, uriBob);
+    }
+
+    public void simpleEncounterWithMessageExchange(ASAPRoutingTestPeerFS peerA, ASAPRoutingTestPeerFS peerB, String uriAlice, String uriBob)
             throws IOException, ASAPException, InterruptedException {
 
         // simulate ASAP first encounter with full ASAP protocol stack and engines
@@ -343,12 +406,12 @@ public class RoutingASAPPeerFSTest {
         ASAPMessageReceivedListenerExample aliceMessageReceivedListenerExample =
                 new ASAPMessageReceivedListenerExample();
 
-        aliceRoutingTestPeer.addASAPMessageReceivedListener(format, aliceMessageReceivedListenerExample);
+        peerA.addASAPMessageReceivedListener(format, aliceMessageReceivedListenerExample);
 
         // example - this should be produced by your application
         byte[] serializedData = TestUtils.serializeExample(42, "from alice", true);
 
-        aliceRoutingTestPeer.sendASAPMessage(format, uriAlice, serializedData);
+        peerA.sendASAPMessage(format, uriAlice, serializedData);
 
         ///////////////// BOB //////////////////////////////////////////////////////////////
 
@@ -357,23 +420,23 @@ public class RoutingASAPPeerFSTest {
                 new ASAPMessageReceivedListenerExample();
 
         // register your listener (or that mock) with asap connection mock
-        bobRoutingTestPeer.addASAPMessageReceivedListener(format, asapMessageReceivedListenerExample);
+        peerB.addASAPMessageReceivedListener(format, asapMessageReceivedListenerExample);
 
         // bob writes something
-        bobRoutingTestPeer.sendASAPMessage(format, uriBob,
+        peerB.sendASAPMessage(format, uriBob,
                 TestUtils.serializeExample(43, "from bob", false));
-        bobRoutingTestPeer.sendASAPMessage(format, uriBob,
+        peerB.sendASAPMessage(format, uriBob,
                 TestUtils.serializeExample(44, "from bob again", false));
 
         // give your app a moment to process
         Thread.sleep(500);
         // start actual encounter
-        aliceRoutingTestPeer.startEncounter(getPortNumber(), bobRoutingTestPeer);
+        peerA.startEncounter(getPortNumber(), peerB);
 
         // give your app a moment to process
         Thread.sleep(1000);
         // stop encounter
-        bobRoutingTestPeer.stopEncounter(aliceRoutingTestPeer);
+        peerA.stopEncounter(peerB);
         // give your app a moment to process
         Thread.sleep(1000);
     }

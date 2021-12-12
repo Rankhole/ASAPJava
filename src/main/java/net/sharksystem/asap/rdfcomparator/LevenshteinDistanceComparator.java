@@ -4,10 +4,6 @@ import net.sharksystem.asap.rdfmodel.RDFModel;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 
 public class LevenshteinDistanceComparator extends RDFComparatorTemplateImpl {
-    public LevenshteinDistanceComparator(RDFModel rdfModel) {
-        super(rdfModel);
-    }
-
     @Override
     public float compareAttributes(String uri, String rdfModelAttribute) {
         String longerString = uri, shorterString = rdfModelAttribute;

@@ -6,6 +6,7 @@ import net.sharksystem.asap.RoutingASAPPeerFS;
 import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
 import net.sharksystem.asap.rdfcomparator.RDFComparator;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
+import net.sharksystem.asap.rdfmodel.RDFModel;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -25,12 +26,16 @@ public class ASAPRoutingTestPeerFS extends RoutingASAPPeerFS {
 
     public ASAPRoutingTestPeerFS(CharSequence peerName, CharSequence rootFolder, Collection<CharSequence> supportedFormats)
             throws IOException, ASAPException {
-        super(peerName, rootFolder, supportedFormats, new LiteralStringComparator(new JenaRDFModel()));
+        super(peerName, rootFolder, supportedFormats, new LiteralStringComparator());
     }
 
     public ASAPRoutingTestPeerFS(CharSequence peerName, CharSequence rootFolder, Collection<CharSequence> supportedFormats, RDFComparator rdfComparator)
             throws IOException, ASAPException {
         super(peerName, rootFolder, supportedFormats, rdfComparator);
+    }
+
+    public ASAPRoutingTestPeerFS(CharSequence peerName, CharSequence rootFolder, Collection<CharSequence> supportedFormats, RDFComparator rdfComparator, RDFModel rdfModel) throws IOException, ASAPException {
+        super(peerName, rootFolder, supportedFormats, rdfComparator, rdfModel);
     }
 
     public void startEncounter(int port, ASAPRoutingTestPeerFS otherPeer) throws IOException {

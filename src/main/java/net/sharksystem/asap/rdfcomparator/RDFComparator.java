@@ -12,11 +12,6 @@ public interface RDFComparator {
      * @param similarityValue value between 0.0 and 1.0 which describes the threshold for matching
      * @return true, if similarity bigger then threshold, else false
      */
-    boolean compareWithRDFModel(String uri, float similarityValue);
+    boolean compareWithRDFModel(String uri, float similarityValue, RDFModel model);
 
-    /**
-     * Set the rdf model of the comparator.
-     * @param rdfModel rdf model
-     */
-    void setRDFModel(RDFModel rdfModel);
 }

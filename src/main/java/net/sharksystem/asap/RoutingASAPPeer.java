@@ -10,16 +10,27 @@ public interface RoutingASAPPeer extends ASAPPeer{
     void setRDFModel(RDFModel rdfModel);
 
     /**
+     * Returns the peers current RDF model.
+     */
+    RDFModel getRDFModel();
+
+    /**
      * Set the Routing to whitelist with the given RDFModel
      * @param rdfModel rdf model implementation
      */
-    void setRoutingWhitelist(RDFModel rdfModel);
+    default void setRoutingWhitelist(RDFModel rdfModel){
+        this.useWhitelistForRouting();
+        this.setRDFModel(rdfModel);
+    };
 
     /**
      * Set the Routing to blacklist with the given RDFModel
      * @param rdfModel rdf model implementation
      */
-    void setRoutingBlacklist(RDFModel rdfModel);
+    default void setRoutingBlacklist(RDFModel rdfModel) {
+        this.useBlacklistForRouting();
+        this.setRDFModel(rdfModel);
+    };
 
     /**
      * Sets Routing to whitelist mode

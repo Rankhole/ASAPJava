@@ -1,9 +1,12 @@
 package net.sharksystem.asap.rdfmodel;
 
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,10 +17,10 @@ public class JenaRDFModel implements RDFModel {
     private Model rdfModel = ModelFactory.createDefaultModel();
     private boolean onlyChildren = false;
 
-    public JenaRDFModel(){
+    public JenaRDFModel() {
         InputStream in = FileManager.getInternal().open("src/main/resources/rdfModel.rdf");
         if (in == null) {
-            throw new IllegalArgumentException( "File: src/main/resources/rdfModel.rdf not found");
+            throw new IllegalArgumentException("File: src/main/resources/rdfModel.rdf not found");
         }
 
         // load model into memory
@@ -25,18 +28,18 @@ public class JenaRDFModel implements RDFModel {
     }
 
     @Override
-    public List<String> getModelAttributesAsList() {
+    public List<String> getModelResourcesAsList() {
         Set<String> attributeList = new HashSet<>();
 
         NodeIterator nodeIterator = rdfModel.listObjects();
-        while (nodeIterator.hasNext()){
+        while (nodeIterator.hasNext()) {
             RDFNode rdfNode = nodeIterator.next();
             attributeList.add(rdfNode.toString());
         }
 
-        if(!onlyChildren){
+        if (!onlyChildren) {
             ResIterator resIterator = rdfModel.listSubjects();
-            while (resIterator.hasNext()){
+            while (resIterator.hasNext()) {
                 RDFNode rdfNode = resIterator.next();
                 attributeList.add(rdfNode.toString());
             }
@@ -46,8 +49,24 @@ public class JenaRDFModel implements RDFModel {
     }
 
     @Override
-    public void persistModelToFilesystem() {
-
+    public boolean searchUsingQuery(String queryTemplate, String name) throws IOException {
+        // read query template file and parse to string
+        String queryString = new String(getClass().getClassLoader().getResourceAsStream(queryTemplate).readAllBytes(), StandardCharsets.UTF_8);
+        // replace placeholder with actual search term
+        queryString = queryString.replace("#PLACEHOLDER", name);
+        // create query
+        Query query = QueryFactory.create(queryString);
+        // execute query
+        QueryExecution qe = QueryExecutionFactory.create(query, rdfModel);
+        // obtain results
+        ResultSet results = qe.execSelect();
+        boolean found = false;
+        while (results.hasNext()) {
+            QuerySolution querySolution = results.next();
+            found = true;
+            System.out.println("RDFModel: FOUND QUERY: " + querySolution.toString());
+        }
+        return found;
     }
 
     public boolean isOnlyChildren() {

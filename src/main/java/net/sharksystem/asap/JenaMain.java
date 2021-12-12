@@ -3,6 +3,7 @@ package net.sharksystem.asap;
 import de.linguatools.disco.CorruptConfigFileException;
 import de.linguatools.disco.DISCO;
 import de.linguatools.disco.WrongWordspaceTypeException;
+import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.VCARD;
@@ -79,6 +80,15 @@ public class JenaMain {
             RDFNode rdfNode = resIterator.next();
             System.out.println(rdfNode);
         }
+
+        String queryString = "PREFIX vcard: <http://www.w3.org/2001/vcard-rdf/3.0#> " +
+                "SELECT ?x WHERE { ?x  vcard:Other \"Eis\" }";
+        Query query = QueryFactory.create(queryString);
+
+        QueryExecution qe = QueryExecutionFactory.create(query, model);
+        ResultSet results = qe.execSelect();
+        ResultSetFormatter.out(System.out, results, query);
+        qe.close();
 
         System.out.println(JenaMain.wordSimilarity("Sport", "Schwimmen"));
         System.out.println(JenaMain.wordSimilarity("Sport", "Fleisch"));

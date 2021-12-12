@@ -10,15 +10,9 @@ import java.util.List;
  */
 public abstract class RDFComparatorTemplateImpl implements RDFComparator {
 
-    RDFModel rdfModel;
-
-    public RDFComparatorTemplateImpl(RDFModel rdfModel){
-        this.rdfModel = rdfModel;
-    }
-
     @Override
-    public boolean compareWithRDFModel(String uri, float similarityValue) {
-        List<String> rdfModelList = rdfModel.getModelAttributesAsList();
+    public boolean compareWithRDFModel(String uri, float similarityValue, RDFModel model) {
+        List<String> rdfModelList = model.getModelResourcesAsList();
         for(String rdfModelAttribute : rdfModelList) {
             float similarityWithUri = compareAttributes(uri, rdfModelAttribute);
             if (similarityWithUri > similarityValue){
@@ -29,10 +23,4 @@ public abstract class RDFComparatorTemplateImpl implements RDFComparator {
     }
 
     public abstract float compareAttributes(String uri, String rdfModelAttribute);
-
-    @Override
-    public void setRDFModel(RDFModel rdfModel) {
-        this.rdfModel = rdfModel;
-    }
-
 }
