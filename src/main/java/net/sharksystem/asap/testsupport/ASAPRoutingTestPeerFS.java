@@ -24,14 +24,10 @@ public class ASAPRoutingTestPeerFS extends RoutingASAPPeerFS {
         this(peerName, "./testPeerFS/" + peerName, supportedFormats, rdfComparator);
     }
 
-    public ASAPRoutingTestPeerFS(CharSequence peerName, CharSequence rootFolder, Collection<CharSequence> supportedFormats)
-            throws IOException, ASAPException {
-        super(peerName, rootFolder, supportedFormats, new LiteralStringComparator());
-    }
-
     public ASAPRoutingTestPeerFS(CharSequence peerName, CharSequence rootFolder, Collection<CharSequence> supportedFormats, RDFComparator rdfComparator)
             throws IOException, ASAPException {
-        super(peerName, rootFolder, supportedFormats, rdfComparator);
+        super(peerName, rootFolder, supportedFormats);
+        setRDFComparator(rdfComparator);
     }
 
     public ASAPRoutingTestPeerFS(CharSequence peerName, CharSequence rootFolder, Collection<CharSequence> supportedFormats, RDFComparator rdfComparator, RDFModel rdfModel) throws IOException, ASAPException {

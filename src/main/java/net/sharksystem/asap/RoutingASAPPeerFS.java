@@ -2,6 +2,7 @@ package net.sharksystem.asap;
 
 import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
 import net.sharksystem.asap.rdfcomparator.RDFComparator;
+import net.sharksystem.asap.rdfmodel.JenaRDFModel;
 import net.sharksystem.asap.rdfmodel.RDFModel;
 
 import java.io.IOException;
@@ -21,11 +22,7 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer {
     public RoutingASAPPeerFS(CharSequence owner, CharSequence rootFolder, Collection<CharSequence> supportFormats) throws IOException, ASAPException {
         super(owner, rootFolder, supportFormats);
         rdfComparator = new LiteralStringComparator();
-    }
-
-    public RoutingASAPPeerFS(CharSequence owner, CharSequence rootFolder, Collection<CharSequence> supportFormats, RDFComparator rdfComparator) throws IOException, ASAPException {
-        super(owner, rootFolder, supportFormats);
-        this.rdfComparator = rdfComparator;
+        rdfModel = new JenaRDFModel();
     }
 
     public RoutingASAPPeerFS(CharSequence owner, CharSequence rootFolder, Collection<CharSequence> supportFormats, RDFComparator rdfComparator, RDFModel rdfModel) throws IOException, ASAPException {
@@ -67,7 +64,7 @@ public class RoutingASAPPeerFS extends ASAPPeerFS implements RoutingASAPPeer {
                 e.printStackTrace();
             }
         }
-        super.chunkReceived(format, senderE2E, uri, era, asapHopList);
+        //super.chunkReceived(format, senderE2E, uri, era, asapHopList);
     }
 
     public float getSimilarityValue() {

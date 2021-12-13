@@ -4,7 +4,7 @@ import net.sharksystem.asap.rdfmodel.RDFModel;
 
 import java.io.IOException;
 
-public class SparqlComparator implements RDFComparator {
+public class SPARQLComparator implements RDFComparator {
 
     @Override
     public boolean compareWithRDFModel(String uri, float similarityValue, RDFModel rdfModel) {

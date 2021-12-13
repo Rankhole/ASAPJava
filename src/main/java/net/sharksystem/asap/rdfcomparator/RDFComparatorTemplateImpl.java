@@ -15,7 +15,7 @@ public abstract class RDFComparatorTemplateImpl implements RDFComparator {
         List<String> rdfModelList = model.getModelResourcesAsList();
         for(String rdfModelAttribute : rdfModelList) {
             float similarityWithUri = compareAttributes(uri, rdfModelAttribute);
-            if (similarityWithUri > similarityValue){
+            if (similarityWithUri >= similarityValue){
                 return true;
             }
         }
