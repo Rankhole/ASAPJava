@@ -1,7 +1,6 @@
-package net.sharksystem.asap.mockAndTemplates;
+package asap.mockAndTemplates;
 
 import net.sharksystem.asap.*;
-import net.sharksystem.asap.engine.ASAPInternalPeer;
 import net.sharksystem.asap.rdfcomparator.RDFComparator;
 import net.sharksystem.asap.rdfmodel.RDFModel;
 import org.mockito.Mockito;

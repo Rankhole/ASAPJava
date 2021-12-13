@@ -1,8 +1,11 @@
-package net.sharksystem.asap;
+package asap;
 
+import asap.mockAndTemplates.RoutingASAPPeerFSMocked;
 import de.linguatools.disco.CorruptConfigFileException;
-import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
-import net.sharksystem.asap.mockAndTemplates.RoutingASAPPeerFSMocked;
+import net.sharksystem.asap.ASAPException;
+import net.sharksystem.asap.ASAPPeer;
+import net.sharksystem.asap.RoutingASAPPeerFS;
+import asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.rdfcomparator.*;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
 import net.sharksystem.asap.rdfmodel.RDFModel;

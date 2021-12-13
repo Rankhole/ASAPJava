@@ -1,4 +1,4 @@
-package net.sharksystem.asap.mockAndTemplates;
+package asap.mockAndTemplates;
 
 import net.sharksystem.asap.ASAPHop;
 import net.sharksystem.asap.ASAPMessageReceivedListener;
