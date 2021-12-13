@@ -9,6 +9,11 @@ Maven should be installed on your system
 mvn clean package
 ```
 ..in the ASAPJava directory. This creates a jar file with path *ASAPJava/target/ASAPRouter-1.0-SNAPSHOT.jar* which can be used for further development.
+Note that currently the multihop-tests fail with ASAPJava version 0.7.0. Version 0.7.2 is supposed to fix this, but created even more failing tests.
+```
+mvn clean package -DskipTests
+```
+Use this to skip tests and compile into a jar.
 
 # Setup Word space for Disco
 If you want to use the SemanticComparator, you need to first setup the required Word space yourself. This chapter will explain how to do so.
