@@ -22,18 +22,17 @@ public class JenaMain {
     static {
         try {
             disco = DISCO.load("src/main/resources/cc.de.300.col.denseMatrix/cc.de.300-COL.denseMatrix");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CorruptConfigFileException e) {
+        } catch (IOException | CorruptConfigFileException e) {
             e.printStackTrace();
         }
     }
 
-    public static double wordSimilarity(String word1, String word2) throws IOException, CorruptConfigFileException {
+    public static double wordSimilarity(String word1, String word2) throws IOException {
         return disco.semanticSimilarity(word1, word2,
                 DISCO.getVectorSimilarity(DISCO.SimilarityMeasure.COSINE));
     }
 
+    // main method to test out some stuff and write out the rdf file
     public static void main(String[] args) throws IOException, CorruptConfigFileException, WrongWordspaceTypeException {
         // create an empty Model
         Model model = ModelFactory.createDefaultModel();

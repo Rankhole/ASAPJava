@@ -7,10 +7,7 @@ import org.apache.jena.util.FileManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class JenaRDFModel implements RDFModel {
 
@@ -18,6 +15,7 @@ public class JenaRDFModel implements RDFModel {
     private boolean onlyChildren = false;
 
     public JenaRDFModel() {
+        // we just load this file as our model, we don't really need to change it for our tests and usecases.
         InputStream in = FileManager.getInternal().open("src/main/resources/rdfModel.rdf");
         if (in == null) {
             throw new IllegalArgumentException("File: src/main/resources/rdfModel.rdf not found");
@@ -51,7 +49,7 @@ public class JenaRDFModel implements RDFModel {
     @Override
     public boolean searchUsingQuery(String queryTemplate, String name) throws IOException {
         // read query template file and parse to string
-        String queryString = new String(getClass().getClassLoader().getResourceAsStream(queryTemplate).readAllBytes(), StandardCharsets.UTF_8);
+        String queryString = new String(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(queryTemplate)).readAllBytes(), StandardCharsets.UTF_8);
         // replace placeholder with actual search term
         queryString = queryString.replace("#PLACEHOLDER", name);
         // create query

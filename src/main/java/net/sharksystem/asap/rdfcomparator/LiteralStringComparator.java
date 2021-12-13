@@ -1,7 +1,5 @@
 package net.sharksystem.asap.rdfcomparator;
 
-import net.sharksystem.asap.rdfmodel.RDFModel;
-
 public class LiteralStringComparator extends RDFComparatorTemplateImpl {
     @Override
     public float compareAttributes(String uri, String rdfModelAttribute) {

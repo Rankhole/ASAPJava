@@ -1,13 +1,11 @@
 package net.sharksystem.asap;
 
+import de.linguatools.disco.CorruptConfigFileException;
 import net.sharksystem.asap.mockAndTemplates.ASAPMessageReceivedListenerExample;
 import net.sharksystem.asap.mockAndTemplates.RoutingASAPPeerFSMocked;
-import net.sharksystem.asap.rdfcomparator.LiteralStringComparator;
-import net.sharksystem.asap.rdfcomparator.RDFComparator;
-import net.sharksystem.asap.rdfcomparator.SPARQLComparator;
+import net.sharksystem.asap.rdfcomparator.*;
 import net.sharksystem.asap.rdfmodel.JenaRDFModel;
 import net.sharksystem.asap.rdfmodel.RDFModel;
-import net.sharksystem.asap.mockAndTemplates.TestUtils;
 import net.sharksystem.asap.testsupport.ASAPRoutingTestPeerFS;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Assertions;
@@ -101,7 +99,7 @@ public class RoutingASAPPeerFSTest {
 
     @Test
     public void chunkRecievedTest_whitelistMatch() throws IOException, ASAPException {
-
+        // these are unit tests for the crucial code of the RoutingASAPPeerFS
         // case1: whitelist & match
         unitTestPeer.useWhitelistForRouting();
         unitTestPeer.chunkReceived(format.toString(), "somesender", match, 0, null);
@@ -404,6 +402,90 @@ public class RoutingASAPPeerFSTest {
     }
 
     @Test
+    public void levenshteinDistanceComparator_nonBlacklistEntry() throws InterruptedException, IOException, ASAPException {
+        aliceRoutingTestPeer.setRDFComparator(new LevenshteinDistanceComparator());
+        bobRoutingTestPeer.setRDFComparator(new LevenshteinDistanceComparator());
+        // not on blacklist, so all entries should persist (should be the same as ASAPPeerFS)
+        String uri = "Pinguin";
+
+        simpleEncounterWithMessageExchange("Tiger", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Elefant");
+
+        simpleEncounterWithMessageExchange("Hallo", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Hallo");
+
+        // expected: ALL eras should exist on both sides
+        // actual: alice missing „Elefant”, bob missing the last „Pinguin”...
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+    }
+
+    @Test
+    public void levenshteinDistanceComparator_blacklistEntry() throws InterruptedException, IOException, ASAPException {
+        aliceRoutingTestPeer.setRDFComparator(new LevenshteinDistanceComparator());
+        bobRoutingTestPeer.setRDFComparator(new LevenshteinDistanceComparator());
+        // this is blacklisted, should be deleted out of incoming storage
+        String uri = "Eis";
+
+        simpleEncounterWithMessageExchange("Tiger", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Elefant");
+
+        simpleEncounterWithMessageExchange("Hallo", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Hallo");
+
+        // expected: no era 0 and era 2 of Bob, no era 1 and 3 of Alice
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+    }
+
+    @Test
+    public void semanticComparator_blacklistEntry() throws InterruptedException, IOException, ASAPException, CorruptConfigFileException {
+        aliceRoutingTestPeer.setRDFComparator(new SemanticComparator());
+        bobRoutingTestPeer.setRDFComparator(new SemanticComparator());
+        // technically not on blacklist, but very semantically close!
+        // fire || ice
+        String uri = "Feuer";
+
+        simpleEncounterWithMessageExchange("Tiger", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Elefant");
+
+        simpleEncounterWithMessageExchange("Hallo", uri);
+
+        simpleEncounterWithMessageExchange(uri, "Hallo");
+
+        // expected: ALL eras should exist on both sides
+        // actual: alice missing „Elefant”, bob missing the last „Pinguin”...
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 0));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Elefant", 1));
+        Assertions.assertFalse(senderEraShouldExist(aliceRoutingTestPeer, "BOB", uri, 2));
+        Assertions.assertTrue(senderEraShouldExist(aliceRoutingTestPeer, "BOB", "Hallo", 3));
+
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Tiger", 0));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 1));
+        Assertions.assertTrue(senderEraShouldExist(bobRoutingTestPeer, "ALICE", "Hallo", 2));
+        Assertions.assertFalse(senderEraShouldExist(bobRoutingTestPeer, "ALICE", uri, 3));
+    }
+
+    @Test
     public void multihopTests_blacklistEntry() throws IOException, ASAPException, InterruptedException {
         // this is blacklisted, should be deleted out of incoming storage
         String uri = "Eis";
@@ -545,7 +627,7 @@ public class RoutingASAPPeerFSTest {
 
     public void simpleEncounterWithMessageExchange(ASAPRoutingTestPeerFS peerA, ASAPRoutingTestPeerFS peerB, String uriPeerA, String uriPeerB)
             throws IOException, ASAPException, InterruptedException {
-
+        // taken over from "UseThis4YourAppTests"
         // simulate ASAP first encounter with full ASAP protocol stack and engines
         System.out.println("+++++++++++++++++++ 1st encounter starts soon ++++++++++++++++++++");
         Thread.sleep(50);

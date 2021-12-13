@@ -5,6 +5,7 @@ import net.sharksystem.asap.ASAPMessageReceivedListener;
 import net.sharksystem.asap.ASAPMessages;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,7 +34,9 @@ public class ASAPMessageReceivedListenerExample implements ASAPMessageReceivedLi
         System.out.println("asap message received (" + format + " | " + uri + "). size == " + messages.size());
         Iterator<byte[]> yourPDUIter = messages.getMessages();
         while (yourPDUIter.hasNext()) {
-            TestUtils.deserializeExample(yourPDUIter.next());
+            // print out all messages
+            // we serialized a simple String, so now we restore the string again
+            System.out.println(new String(yourPDUIter.next(), StandardCharsets.UTF_8));
         }
     }
 }

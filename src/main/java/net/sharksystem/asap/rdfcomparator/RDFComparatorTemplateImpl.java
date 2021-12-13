@@ -12,10 +12,12 @@ public abstract class RDFComparatorTemplateImpl implements RDFComparator {
 
     @Override
     public boolean compareWithRDFModel(String uri, float similarityValue, RDFModel model) {
+        // load up all the models as a list
         List<String> rdfModelList = model.getModelResourcesAsList();
-        for(String rdfModelAttribute : rdfModelList) {
+        for (String rdfModelAttribute : rdfModelList) {
+            // compare the uri with each attribute in the list
             float similarityWithUri = compareAttributes(uri, rdfModelAttribute);
-            if (similarityWithUri >= similarityValue){
+            if (similarityWithUri >= similarityValue) {
                 return true;
             }
         }

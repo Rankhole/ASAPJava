@@ -2,8 +2,6 @@ package net.sharksystem.asap.rdfcomparator;
 
 import net.sharksystem.asap.rdfmodel.RDFModel;
 
-;
-
 public interface RDFComparator {
 
     /**
