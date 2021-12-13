@@ -1,0 +1,1 @@
+PREFIX vcard: <http://www.w3.org/2001/vcard-rdf/3.0#> SELECT ?x WHERE { ?x  vcard:Other "#PLACEHOLDER" }
